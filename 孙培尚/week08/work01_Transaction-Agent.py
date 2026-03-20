@@ -7,7 +7,7 @@ import json
 # 初始化
 app = FastAPI(title="翻译智能体API")
 client = openai.OpenAI(
-    api_key="sk-1f8f970c557d41b9899269dc981366f9",
+    api_key="sk-abuf970c557d41b9899269dc981366f9",
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
