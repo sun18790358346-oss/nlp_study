@@ -1,0 +1,557 @@
+app:
+  description: 意图识别 + RAG问答系统，支持机器学习和大模型两个知识库的智能检索
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: workflow
+  name: 意图识别+RAG问答
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.1.34@a3a90f3034b884bb215b8770af24ecd6145cfd5b6ab97f9e40c3143cbe3ccd34
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: question-classifier
+      id: start-classifier
+      source: start
+      sourceHandle: source
+      target: classifier
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: classifier-other
+      source: classifier
+      sourceHandle: other
+      target: llm_other
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: classifier-ml
+      source: classifier
+      sourceHandle: ml
+      target: retrieval_ml
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: classifier-llm
+      source: classifier
+      sourceHandle: llm
+      target: retrieval_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: retrieval-ml-to-llm
+      source: retrieval_ml
+      sourceHandle: source
+      target: llm_ml
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: retrieval-llm-to-llm
+      source: retrieval_llm
+      sourceHandle: source
+      target: llm_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: llm-other-to-end
+      source: llm_other
+      sourceHandle: source
+      target: end_other
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: llm-ml-to-end
+      source: llm_ml
+      sourceHandle: source
+      target: end_ml
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: llm-llm-to-end
+      source: llm_llm
+      sourceHandle: source
+      target: end_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: 用户问题
+          options: []
+          placeholder: 请输入您的问题
+          required: true
+          type: text-input
+          variable: query
+      height: 108
+      id: start
+      position:
+        x: 58
+        y: 201
+      positionAbsolute:
+        x: 58
+        y: 201
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        classes:
+        - id: other
+          name: 其他问题
+        - id: ml
+          name: 机器学习问题
+        - id: llm
+          name: 大模型问题
+        instruction: '你是一个专业的意图分类器，请严格按照规则对用户问题进行分类，只输出分类结果，不要任何解释。
+
+
+          分类规则：
+
+          - 其他问题：闲聊、天气、生活、非AI/机器学习/大模型的问题
+
+          - 机器学习问题：线性回归、逻辑回归、决策树、随机森林、SVM、聚类、神经网络、梯度下降、特征工程、模型评估等传统机器学习算法
+
+          - 大模型问题：LLM、大语言模型、Transformer、GPT、BERT、微调、RAG、提示词工程、Embedding、向量数据库、Agent等
+
+          '
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: qwen3.5-plus
+          provider: langgenius/tongyi/tongyi
+        query_variable_selector:
+        - start
+        - query
+        selected: false
+        title: 意图识别
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 207
+      id: classifier
+      position:
+        x: 360
+        y: 202
+      positionAbsolute:
+        x: 360
+        y: 202
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.5-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: system-other
+          role: system
+          text: '你是一个友好、专业的智能助手。请根据用户的问题，提供准确、有帮助的回答。
+
+            如果不知道答案，请诚实地说不知道，不要编造信息。
+
+            '
+        - id: user-other
+          role: user
+          text: '{{#start.query#}}'
+        selected: false
+        structured_output_enabled: false
+        title: LLM-直接回答
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: llm_other
+      position:
+        x: 664
+        y: 80
+      positionAbsolute:
+        x: 664
+        y: 80
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - retrieval_ml
+          - result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.5-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: system-ml
+          role: system
+          text: '你是一个机器学习专家。请严格根据以下参考资料回答用户的问题。
+
+
+            参考资料：
+
+            {{#retrieval_ml.result#}}
+
+
+            注意事项：
+
+            1. 只根据参考资料回答，不要编造信息
+
+            2. 如果参考资料中没有相关信息，请说明"知识库中没有找到相关内容"
+
+            3. 回答要专业、准确、易懂
+
+            '
+        - id: user-ml
+          role: user
+          text: '{{#start.query#}}'
+        selected: false
+        structured_output_enabled: false
+        title: LLM-机器学习回答
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: llm_ml
+      position:
+        x: 664
+        y: 222
+      positionAbsolute:
+        x: 664
+        y: 222
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - retrieval_llm
+          - result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.5-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: system-llm
+          role: system
+          text: '你是一个大语言模型专家。请严格根据以下参考资料回答用户的问题。
+
+
+            参考资料：
+
+            {{#retrieval_llm.result#}}
+
+
+            注意事项：
+
+            1. 只根据参考资料回答，不要编造信息
+
+            2. 如果参考资料中没有相关信息，请说明"知识库中没有找到相关内容"
+
+            3. 回答要专业、准确、易懂
+
+            '
+        - id: user-llm
+          role: user
+          text: '{{#start.query#}}'
+        selected: false
+        structured_output_enabled: false
+        title: LLM-大模型回答
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: llm_llm
+      position:
+        x: 664
+        y: 360
+      positionAbsolute:
+        x: 664
+        y: 360
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        dataset_ids:
+        - 86osXUFp3JCRPOy5cmaFlVMHqDw27/2cgyD3JyjOImlKpcQwaCs1phuod+NF6WZV
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_attachment_selector: []
+        query_variable_selector:
+        - start
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: 机器学习-知识检索
+        type: knowledge-retrieval
+      height: 89
+      id: retrieval_ml
+      position:
+        x: 1000
+        y: 220
+      positionAbsolute:
+        x: 1000
+        y: 220
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        dataset_ids:
+        - ODAZpDE8GtFyuyClhVRZ3RmQcIxrv32kZgfxSDB836cBeMnZYubdAjVGEw87egqX
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_attachment_selector: []
+        query_variable_selector:
+        - start
+        - query
+        retrieval_mode: multiple
+        selected: true
+        title: 大模型-知识检索
+        type: knowledge-retrieval
+      height: 89
+      id: retrieval_llm
+      position:
+        x: 1000
+        y: 360
+      positionAbsolute:
+        x: 1000
+        y: 360
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - llm_other
+          - text
+          value_type: string
+          variable: answer
+        - value_selector:
+          - classifier
+          - class_name
+          value_type: string
+          variable: intent
+        selected: false
+        title: 直接回答-输出
+        type: end
+      height: 113
+      id: end_other
+      position:
+        x: 965
+        y: 80
+      positionAbsolute:
+        x: 965
+        y: 80
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - llm_ml
+          - text
+          value_type: string
+          variable: answer
+        - value_selector:
+          - classifier
+          - class_name
+          value_type: string
+          variable: intent
+        - value_selector:
+          - retrieval_ml
+          - result
+          value_type: array[object]
+          variable: retrieved_docs
+        selected: false
+        title: 机器学习-输出
+        type: end
+      height: 139
+      id: end_ml
+      position:
+        x: 1301
+        y: 222
+      positionAbsolute:
+        x: 1301
+        y: 222
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - llm_llm
+          - text
+          value_type: string
+          variable: answer
+        - value_selector:
+          - classifier
+          - class_name
+          value_type: string
+          variable: intent
+        - value_selector:
+          - retrieval_llm
+          - result
+          value_type: array[object]
+          variable: retrieved_docs
+        selected: false
+        title: 大模型-输出
+        type: end
+      height: 139
+      id: end_llm
+      position:
+        x: 1301
+        y: 360
+      positionAbsolute:
+        x: 1301
+        y: 360
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: -437.8402870066925
+      y: 5.894224665896729
+      zoom: 0.6597539553864477
+  rag_pipeline_variables: []
