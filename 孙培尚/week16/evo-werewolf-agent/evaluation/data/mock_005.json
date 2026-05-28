@@ -1,0 +1,145 @@
+{
+  "game_id": "test_005",
+  "config_name": "standard_6",
+  "winner": "good",
+  "days_played": 2,
+  "total_dialogues": 46,
+  "players": [
+    {
+      "player_id": 0,
+      "name": "玩家1",
+      "role": "werewolf",
+      "camp": "evil",
+      "is_alive": false,
+      "death_cause": "vote",
+      "death_day": 2
+    },
+    {
+      "player_id": 1,
+      "name": "玩家2",
+      "role": "werewolf",
+      "camp": "evil",
+      "is_alive": true
+    },
+    {
+      "player_id": 2,
+      "name": "玩家3",
+      "role": "seer",
+      "camp": "good",
+      "is_alive": false,
+      "death_cause": "night_kill",
+      "death_day": 1
+    },
+    {
+      "player_id": 3,
+      "name": "玩家4",
+      "role": "witch",
+      "camp": "good",
+      "is_alive": false,
+      "death_cause": "night_kill",
+      "death_day": 2
+    },
+    {
+      "player_id": 4,
+      "name": "玩家5",
+      "role": "hunter",
+      "camp": "good",
+      "is_alive": false,
+      "death_cause": "vote",
+      "death_day": 3
+    },
+    {
+      "player_id": 5,
+      "name": "玩家6",
+      "role": "villager",
+      "camp": "good",
+      "is_alive": false,
+      "death_cause": "night_kill",
+      "death_day": 3
+    }
+  ],
+  "seer_checks": [
+    {
+      "day": 1,
+      "player_id": 2,
+      "target": 3,
+      "result": "good"
+    },
+    {
+      "day": 2,
+      "player_id": 2,
+      "target": 1,
+      "result": "wolf"
+    }
+  ],
+  "witch_actions": [
+    {
+      "day": 1,
+      "player_id": 3,
+      "action": "heal",
+      "target": 2
+    }
+  ],
+  "hunter_shots": [],
+  "wolf_votes": [
+    {
+      "day": 1,
+      "player_id": 0,
+      "target": 2
+    },
+    {
+      "day": 1,
+      "player_id": 1,
+      "target": 2
+    }
+  ],
+  "votes": [
+    {
+      "day": 2,
+      "player_id": 2,
+      "target": 0
+    },
+    {
+      "day": 2,
+      "player_id": 3,
+      "target": 0
+    },
+    {
+      "day": 2,
+      "player_id": 4,
+      "target": 0
+    },
+    {
+      "day": 2,
+      "player_id": 5,
+      "target": 0
+    },
+    {
+      "day": 2,
+      "player_id": 1,
+      "target": 5
+    },
+    {
+      "day": 2,
+      "player_id": 0,
+      "target": 5
+    }
+  ],
+  "speeches": [],
+  "role_assignment": {
+    "0": "werewolf",
+    "1": "werewolf",
+    "2": "seer",
+    "3": "witch",
+    "4": "hunter",
+    "5": "villager"
+  },
+  "player_styles": {
+    "0": "balanced",
+    "1": "balanced",
+    "2": "balanced",
+    "3": "balanced",
+    "4": "balanced",
+    "5": "balanced"
+  }
+}
